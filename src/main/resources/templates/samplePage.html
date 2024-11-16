@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Sample Page</title>
+</head>
+<body>
+    <h1>Sample Data</h1>
+    <div>
+        <!-- Thymeleaf 사용해서 데이터를 랜더링한다. -->
+        <div th:each="data: ${dataList}" >
+            <p th:text="${data.id + ': ' + data.name}"></p>
+        </div>
+        <!-- 데이터가 없을 경우 처리 -->
+        <div th:if="${dataList.size() == 0}">
+            <p>No data</p>
+        </div>
+    </div>
+</body>
+</html>
