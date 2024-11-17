@@ -8,6 +8,8 @@ public class ItemEntity {
     private String name;
     private String type;
     private Integer price;
+    private Integer storeId;
+    private Integer stock;
     private String cpu;
     private String capacity;
 
