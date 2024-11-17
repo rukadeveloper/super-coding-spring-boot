@@ -1,5 +1,7 @@
 package com.github.basic.web.dto;
 
+import com.github.basic.repository.ItemEntity;
+
 import java.util.Objects;
 
 public class Item {
@@ -27,6 +29,14 @@ public class Item {
         this.type = type;
         this.price = price;
         this.spec = new Spec(cpu,capacity);
+    }
+
+    public Item(ItemEntity itemEntity) {
+        this.id = String.valueOf(itemEntity.getId());
+        this.name = itemEntity.getName();
+        this.type = itemEntity.getType();
+        this.price = itemEntity.getPrice();
+        this.spec = new Spec(itemEntity.getCpu(), itemEntity.getCapacity());
     }
 
     public String getId() {

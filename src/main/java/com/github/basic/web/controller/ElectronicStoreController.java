@@ -1,5 +1,8 @@
 package com.github.basic.web.controller;
 
+import com.github.basic.repository.ElectronicStoreItemRepository;
+import com.github.basic.repository.ItemEntity;
+import com.github.basic.service.ElectronicStoreItemService;
 import com.github.basic.web.dto.Item;
 import com.github.basic.web.dto.ItemBody;
 import org.springframework.web.bind.annotation.*;
@@ -14,71 +17,50 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class ElectronicStoreController {
 
-    private static int serialItemId = 1;
+    private ElectronicStoreItemService electronicStoreItemService;
 
-    private List<Item> items = new ArrayList<Item>(Arrays.asList(
-            new Item(String.valueOf(serialItemId++),"Apple IPhone","SmartPhone",149000,"A14 Bionic","150GB"),
-            new Item(String.valueOf(serialItemId++),"Apple IPhone","SmartPhone",149000,"A14 Bionic","150GB")
-    ));
+    public ElectronicStoreController(ElectronicStoreItemService service) {
+        this.electronicStoreItemService = service;
+    }
+
+    private static int serialItemId = 1;
 
     @GetMapping("/items")
     public List<Item> findAllItem() {
-        return items;
+        return electronicStoreItemService.findAllItems();
     }
 
     @PostMapping("/items")
     public String registerItem(@RequestBody ItemBody itemBody) {
-        Item newItem = new Item(serialItemId++, itemBody);
-        items.add(newItem);
-        return "ID: " + newItem.getId();
+        Integer itemId = electronicStoreItemService.saveItem(itemBody);
+        return "ID : " + itemId;
     }
 
     @GetMapping("/items/{id}")
     public Item findItemByPathId(@PathVariable String id) {
-        Item itemFounded = items.stream()
-                .filter(item -> item.getId().equals(id))
-                .findFirst().orElseThrow(() -> new RuntimeException());
-
-        return itemFounded;
+        return electronicStoreItemService.findById(id);
     }
 
     @GetMapping("/items-query")
     public Item findItemByQueryId(@RequestParam("id") String id) {
-        Item itemFounded = items.stream()
-                .filter(item -> item.getId().equals(id))
-                .findFirst().orElseThrow(() -> new RuntimeException());
-
-        return itemFounded;
+        return electronicStoreItemService.findById(id);
     }
 
     @GetMapping("/items-queries")
     public List<Item> findItemByQueryIds(@RequestParam("id") List<String> ids) {
-
-        Set<String> idSet = ids.stream().collect(Collectors.toSet());
-
-        List<Item> itemFounded = items.stream().filter(item -> idSet.contains(item.getId()))
-                .collect(Collectors.toList());
-
-        return itemFounded;
-
+        return electronicStoreItemService.findItemsByIds(ids);
     }
 
     @DeleteMapping("/items/{id}")
     public String deleteItemByPathId(@PathVariable String id) {
-        Item itemFounded = items.stream().filter(item -> item.getId().equals(id))
-                .findFirst().orElseThrow(() -> new RuntimeException());
-        items.remove(itemFounded);
-        return "Object with Id = " + itemFounded.getId() + " has been deleted";
+      electronicStoreItemService.deleteItems(id);
+      return "성공적인 삭제";
     }
 
     @PutMapping("/items/{id}")
-    public Item updateItem(@RequestBody ItemBody itemBody, @PathVariable String id) {
-        Item itemFounded = items.stream().filter(item -> item.getId().equals(id))
-                .findFirst().orElseThrow(() -> new RuntimeException());
-        items.remove(itemFounded);
+    public Item updateItem(@PathVariable String id, @RequestBody ItemBody itemBody) {
 
-        Item itemUpdated = new Item(Integer.valueOf(id), itemBody);
-        items.add(itemUpdated);
-        return itemUpdated;
+        return electronicStoreItemService.updateItemEntity(id,itemBody);
     }
+
 }
