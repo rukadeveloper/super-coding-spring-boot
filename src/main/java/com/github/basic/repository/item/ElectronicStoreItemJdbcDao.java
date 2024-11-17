@@ -1,6 +1,5 @@
-package com.github.basic.repository;
+package com.github.basic.repository.item;
 
-import com.github.basic.web.dto.ItemBody;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -14,7 +13,8 @@ public class ElectronicStoreItemJdbcDao implements ElectronicStoreItemRepository
 
     static RowMapper<ItemEntity> itemEntityRowMapper = ((rs, rowNum)
             -> new ItemEntity(rs.getInt("id"),rs.getNString("name"),
-               rs.getNString("type"), rs.getInt("price"),
+               rs.getNString("type"), rs.getInt("price"), rs.getInt("store_id"),
+               rs.getInt("stock"),
                rs.getNString("cpu"),rs.getNString("capacity"))) ;
 
     public ElectronicStoreItemJdbcDao(JdbcTemplate jdbcTemplate) {
@@ -61,12 +61,19 @@ public class ElectronicStoreItemJdbcDao implements ElectronicStoreItemRepository
     @Override
     public ItemEntity updateItemEntity(Integer idInt, ItemEntity itemEntity) {
         jdbcTemplate.update("UPDATE item " +
-                            "SET name = ?, type = ?, price = ?, cpu = ?, capacity = ? " +
-                            "WHERE id = ?",
+                            " SET name = ?, type = ?, price = ?, cpu = ?, capacity = ? " +
+                            " WHERE id = ?",
                             itemEntity.getName(),itemEntity.getType(),itemEntity.getPrice(),
                             itemEntity.getCpu(),itemEntity.getCapacity(),idInt);
 
         return jdbcTemplate.queryForObject("SELECT * FROM item WHERE id = ?",itemEntityRowMapper,idInt);
+    }
+
+    @Override
+    public void updateItemStock(Integer itemId, Integer minus) {
+        jdbcTemplate.update("update item " +
+                            " Set stock  = ?" +
+                            " Where id = ?", minus,itemId);
     }
 
 }

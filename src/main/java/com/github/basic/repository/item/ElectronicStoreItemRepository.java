@@ -1,7 +1,4 @@
-package com.github.basic.repository;
-
-import com.github.basic.web.dto.Item;
-import com.github.basic.web.dto.ItemBody;
+package com.github.basic.repository.item;
 
 import java.util.List;
 
@@ -19,4 +16,6 @@ public interface ElectronicStoreItemRepository {
     void deleteItems(int id);
 
     ItemEntity updateItemEntity(Integer idInt, ItemEntity itemEntity);
+
+    void updateItemStock(Integer itemId, Integer minus);
 }

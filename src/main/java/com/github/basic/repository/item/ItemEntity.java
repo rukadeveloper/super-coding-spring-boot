@@ -1,6 +1,4 @@
-package com.github.basic.repository;
-
-import java.util.Objects;
+package com.github.basic.repository.item;
 
 public class ItemEntity {
 
@@ -18,6 +16,19 @@ public class ItemEntity {
         this.name = name;
         this.type = type;
         this.price = price;
+        this.storeId = null;
+        this.stock = 0;
+        this.cpu = cpu;
+        this.capacity = capacity;
+    }
+
+    public ItemEntity(Integer id, String name, String type, Integer price, Integer storeId, Integer stock, String cpu, String capacity) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.price = price;
+        this.storeId = storeId;
+        this.stock = stock;
         this.cpu = cpu;
         this.capacity = capacity;
     }
@@ -54,6 +65,22 @@ public class ItemEntity {
         this.price = price;
     }
 
+    public Integer getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(Integer storeId) {
+        this.storeId = storeId;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
+    }
+
     public String getCpu() {
         return cpu;
     }
@@ -68,17 +95,5 @@ public class ItemEntity {
 
     public void setCapacity(String capacity) {
         this.capacity = capacity;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ItemEntity that)) return false;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
     }
 }

@@ -1,6 +1,6 @@
 package com.github.basic.web.dto;
 
-import com.github.basic.repository.ItemEntity;
+import com.github.basic.repository.item.ItemEntity;
 
 import java.util.Objects;
 

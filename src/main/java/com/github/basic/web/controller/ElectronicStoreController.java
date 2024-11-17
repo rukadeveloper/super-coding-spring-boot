@@ -1,17 +1,12 @@
 package com.github.basic.web.controller;
 
-import com.github.basic.repository.ElectronicStoreItemRepository;
-import com.github.basic.repository.ItemEntity;
 import com.github.basic.service.ElectronicStoreItemService;
+import com.github.basic.web.dto.BuyOrder;
 import com.github.basic.web.dto.Item;
 import com.github.basic.web.dto.ItemBody;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -61,6 +56,12 @@ public class ElectronicStoreController {
     public Item updateItem(@PathVariable String id, @RequestBody ItemBody itemBody) {
 
         return electronicStoreItemService.updateItemEntity(id,itemBody);
+    }
+
+    @PostMapping("/items/buy")
+    public String buyItem(@RequestBody BuyOrder buyOrder) {
+        Integer orderItemNums = electronicStoreItemService.buyItems(buyOrder);
+        return "요청 하신 아이템 중 " + orderItemNums + "개를 구매하였습니다.";
     }
 
 }
