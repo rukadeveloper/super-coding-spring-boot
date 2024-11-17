@@ -14,8 +14,9 @@ public class StoreSalesJdbcDao implements StoreSalesRepository {
     }
 
     static RowMapper<StoreSalesEntity> storeSalesEntityRowMapper = ((rs, rowNum) ->
-            new StoreSalesEntity(rs.getInt("id"),rs.getNString("store_name"),
-                                rs.getInt("amount"))
+            new StoreSalesEntity.StoreSalesEntityBuilder().id(rs.getInt("id"))
+                    .storeName(rs.getNString("store_name")).amount(rs.getInt("amount"))
+                    .build()
     );
 
     @Override

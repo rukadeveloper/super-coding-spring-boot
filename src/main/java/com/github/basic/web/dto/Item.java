@@ -1,9 +1,13 @@
 package com.github.basic.web.dto;
 
 import com.github.basic.repository.item.ItemEntity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
+@NoArgsConstructor
+@Getter
 public class Item {
 
     private String id;
@@ -11,9 +15,6 @@ public class Item {
     private String type;
     private Integer price;
     private Spec spec;
-
-    public Item() {}
-
 
     public Item(Integer id, ItemBody itemBody) {
         this.id = String.valueOf(id);
@@ -37,26 +38,6 @@ public class Item {
         this.type = itemEntity.getType();
         this.price = itemEntity.getPrice();
         this.spec = new Spec(itemEntity.getCpu(), itemEntity.getCapacity());
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public Integer getPrice() {
-        return price;
-    }
-
-    public Spec getSpec() {
-        return spec;
     }
 
     @Override

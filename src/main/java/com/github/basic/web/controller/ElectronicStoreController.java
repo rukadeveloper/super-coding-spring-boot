@@ -4,19 +4,17 @@ import com.github.basic.service.ElectronicStoreItemService;
 import com.github.basic.web.dto.BuyOrder;
 import com.github.basic.web.dto.Item;
 import com.github.basic.web.dto.ItemBody;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class ElectronicStoreController {
 
-    private ElectronicStoreItemService electronicStoreItemService;
-
-    public ElectronicStoreController(ElectronicStoreItemService service) {
-        this.electronicStoreItemService = service;
-    }
+    private final ElectronicStoreItemService electronicStoreItemService;
 
     private static int serialItemId = 1;
 
