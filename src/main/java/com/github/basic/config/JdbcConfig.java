@@ -23,12 +23,32 @@ public class JdbcConfig {
     }
 
     @Bean
+    public DataSource dataSource2() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/chapter_97?useUnicode=true&characterEncoding=UTF-8");
+        dataSource.setUsername("root");
+        dataSource.setPassword("83248324");
+        return dataSource;
+    }
+
+    @Bean
     public JdbcTemplate jdbcTemplate() {
         return new JdbcTemplate(dataSource());
     }
 
     @Bean
+    public JdbcTemplate jdbcTemplate2() {
+        return new JdbcTemplate(dataSource2());
+    }
+
+    @Bean(name="tm1")
     public PlatformTransactionManager transactionManager() {
         return new DataSourceTransactionManager(dataSource());
+    }
+
+    @Bean(name="tm2")
+    public PlatformTransactionManager transactionManager2() {
+        return new DataSourceTransactionManager(dataSource2());
     }
 }

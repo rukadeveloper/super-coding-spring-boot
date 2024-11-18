@@ -63,7 +63,7 @@ public class ElectronicStoreItemService {
         return itemUpdated;
     }
 
-    @Transactional
+    @Transactional(transactionManager = "tm1")
     public Integer buyItems(BuyOrder buyOrder) {
 
         // buyOrder에서 상품 ID와 수량 얻어내기
