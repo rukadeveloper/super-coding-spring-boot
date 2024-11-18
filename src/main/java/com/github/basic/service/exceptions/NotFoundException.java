@@ -1,4 +1,4 @@
-package com.github.basic.service.Mapper;
+package com.github.basic.service.exceptions;
 
 public class NotFoundException extends RuntimeException {
 

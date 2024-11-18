@@ -62,4 +62,12 @@ public class ElectronicStoreController {
         return "요청 하신 아이템 중 " + orderItemNums + "개를 구매하였습니다.";
     }
 
+    @GetMapping("/items-types")
+    public List<Item> findItemByTypes(
+            @RequestParam("type") List<String> types
+    ) {
+        List<Item> items = electronicStoreItemService.findItemByTypes(types);
+        return items;
+    }
+
 }

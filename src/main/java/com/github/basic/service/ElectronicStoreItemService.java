@@ -7,15 +7,17 @@ import com.github.basic.repository.storeSales.StoreSalesEntity;
 import com.github.basic.repository.storeSales.StoreSalesJpaRepository;
 import com.github.basic.repository.storeSales.StoreSalesRepository;
 import com.github.basic.service.Mapper.ItemMapper;
-import com.github.basic.service.Mapper.NotFoundException;
+import com.github.basic.service.exceptions.NotFoundException;
 import com.github.basic.web.dto.BuyOrder;
 import com.github.basic.web.dto.Item;
 import com.github.basic.web.dto.ItemBody;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,5 +110,13 @@ public class ElectronicStoreItemService {
         storeSales.setAmount(storeSales.getAmount() + totalPrice);
 
         return successByItemNums;
+    }
+
+    public List<Item> findItemByTypes(List<String> types) {
+        List<ItemEntity> entities = electronicStoreItemJpaRepository.findItemEntitiesByTypeIn(types);
+        return entities.stream().map(ItemMapper.INSTANCE::itemEntityToItem).collect(Collectors.toList());
+    }
+
+    public Page findAllWithPageable(Pageable pageable) {
     }
 }
