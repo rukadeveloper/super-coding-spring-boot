@@ -41,3 +41,5 @@ VALUES
     ('MacBook Pro', '노트북', 1790000, 3, 40, 'Apple M1 Max', '512GB'),
     ('Sony WH-1000XM4', '헤드폰', 349000, 4, 90, 'Sony HD Nois QN1', '내부 저장소 없음'),
     ('LG OLED CX', 'TV', 2290000, 5, 20, 'LG α9 Gen 3 AI 4K', '128GB');
+    
+SELECT * FROM chapter_96.item;
