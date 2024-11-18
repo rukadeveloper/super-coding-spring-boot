@@ -1,13 +1,15 @@
 package com.github.basic.web.dto;
 
 import com.github.basic.repository.item.ItemEntity;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Objects;
+import lombok.Setter;
 
 @NoArgsConstructor
 @Getter
+@Setter
+@EqualsAndHashCode(of = "id")
 public class Item {
 
     private String id;
@@ -32,23 +34,4 @@ public class Item {
         this.spec = new Spec(cpu,capacity);
     }
 
-    public Item(ItemEntity itemEntity) {
-        this.id = String.valueOf(itemEntity.getId());
-        this.name = itemEntity.getName();
-        this.type = itemEntity.getType();
-        this.price = itemEntity.getPrice();
-        this.spec = new Spec(itemEntity.getCpu(), itemEntity.getCapacity());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Item item)) return false;
-        return Objects.equals(id, item.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
 }

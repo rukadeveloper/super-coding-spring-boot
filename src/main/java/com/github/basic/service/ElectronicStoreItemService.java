@@ -4,6 +4,7 @@ import com.github.basic.repository.item.ElectronicStoreItemRepository;
 import com.github.basic.repository.item.ItemEntity;
 import com.github.basic.repository.storeSales.StoreSalesEntity;
 import com.github.basic.repository.storeSales.StoreSalesRepository;
+import com.github.basic.service.mapper.ItemMapper;
 import com.github.basic.web.dto.BuyOrder;
 import com.github.basic.web.dto.Item;
 import com.github.basic.web.dto.ItemBody;
@@ -22,7 +23,7 @@ public class ElectronicStoreItemService {
 
     public List<Item> findAllItems() {
         List<ItemEntity> itemEntities = electronicStoreItemRepository.findAllItems();
-        List<Item> items = itemEntities.stream().map(Item::new).collect(Collectors.toList());
+        List<Item> items = itemEntities.stream().map(ItemMapper.INSTANCE::itemEntityToItem).collect(Collectors.toList());
         return items;
     }
 
@@ -36,13 +37,13 @@ public class ElectronicStoreItemService {
     public Item findById(String id) {
         Integer idInt = Integer.parseInt(id);
         ItemEntity itemEntity = electronicStoreItemRepository.findById(id);
-        Item item = new Item(itemEntity);
+        Item item = ItemMapper.INSTANCE.itemEntityToItem(itemEntity);
         return item;
     }
 
     public List<Item> findItemsByIds(List<String> ids) {
         List<ItemEntity> itemEntities = electronicStoreItemRepository.findAllItems();
-        List<Item> items = itemEntities.stream().map(Item::new).filter(item -> ids.contains(item.getId())).collect(Collectors.toList());
+        List<Item> items = itemEntities.stream().map(ItemMapper.INSTANCE::itemEntityToItem).filter(item -> ids.contains(item.getId())).collect(Collectors.toList());
         return items;
     }
 
@@ -56,7 +57,7 @@ public class ElectronicStoreItemService {
         ItemEntity itemEntity = new ItemEntity(idInt,itemBody.getName(),itemBody.getType(),
                 itemBody.getPrice(),itemBody.getSpec().getCpu(),itemBody.getSpec().getCapacity());
         ItemEntity itemEntityUpdated = electronicStoreItemRepository.updateItemEntity(idInt, itemEntity);
-        Item itemUpdated = new Item(itemEntityUpdated);
+        Item itemUpdated = ItemMapper.INSTANCE.itemEntityToItem(itemEntityUpdated);
         return itemUpdated;
     }
 
