@@ -1,13 +1,18 @@
 package com.github.basic.service;
 
+import com.github.basic.repository.item.ElectronicStoreItemJpaRepository;
 import com.github.basic.repository.item.ElectronicStoreItemRepository;
 import com.github.basic.repository.item.ItemEntity;
 import com.github.basic.repository.storeSales.StoreSalesEntity;
+import com.github.basic.repository.storeSales.StoreSalesJpaRepository;
 import com.github.basic.repository.storeSales.StoreSalesRepository;
+import com.github.basic.service.Mapper.ItemMapper;
+import com.github.basic.service.Mapper.NotFoundException;
 import com.github.basic.web.dto.BuyOrder;
 import com.github.basic.web.dto.Item;
 import com.github.basic.web.dto.ItemBody;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,51 +21,58 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ElectronicStoreItemService {
     private final ElectronicStoreItemRepository electronicStoreItemRepository;
     private final StoreSalesRepository storeSalesRepository;
+    private final ElectronicStoreItemJpaRepository electronicStoreItemJpaRepository;
+    private final StoreSalesJpaRepository storeSalesJpaRepository;
 
     public List<Item> findAllItems() {
-        List<ItemEntity> itemEntities = electronicStoreItemRepository.findAllItems();
-        List<Item> items = itemEntities.stream().map(Item::new).collect(Collectors.toList());
+        List<ItemEntity> itemEntities = electronicStoreItemJpaRepository.findAll();
+        List<Item> items = itemEntities.stream().map(ItemMapper.INSTANCE::itemEntityToItem).collect(Collectors.toList());
         return items;
     }
 
     public Integer saveItem(ItemBody itemBody) {
-        ItemEntity itemEntity = new ItemEntity(null,itemBody.getName(),itemBody.getType(),
-                                itemBody.getPrice(),itemBody.getSpec().getCpu(),itemBody.getSpec().getCapacity());
+        ItemEntity itemEntity = ItemMapper.INSTANCE.idAndItemBodyToItemEntity(null,itemBody);
+        ItemEntity itemEntityCreated;
+        itemEntityCreated = electronicStoreItemJpaRepository.save(itemEntity);
 
-        return electronicStoreItemRepository.saveItem(itemEntity);
+        return itemEntityCreated.getId();
     }
 
     public Item findById(String id) {
         Integer idInt = Integer.parseInt(id);
-        ItemEntity itemEntity = electronicStoreItemRepository.findById(id);
+        ItemEntity itemEntity = electronicStoreItemJpaRepository.findById(idInt).orElseThrow(() -> new NotFoundException("해당 ID의 제품이 없습니다." + idInt) );
         Item item = new Item(itemEntity);
         return item;
     }
 
     public List<Item> findItemsByIds(List<String> ids) {
-        List<ItemEntity> itemEntities = electronicStoreItemRepository.findAllItems();
+        List<ItemEntity> itemEntities = electronicStoreItemJpaRepository.findAll();
+        if(itemEntities.isEmpty()) {
+            throw new NotFoundException("아무 아이템들을 찾을 수 없습니다.");
+        }
         List<Item> items = itemEntities.stream().map(Item::new).filter(item -> ids.contains(item.getId())).collect(Collectors.toList());
         return items;
     }
 
     public void deleteItems(String id) {
         Integer idInt = Integer.parseInt(id);
-        electronicStoreItemRepository.deleteItems(idInt);
+        electronicStoreItemJpaRepository.deleteById(idInt);
     }
 
+    @Transactional(transactionManager = "tmJpa1")
     public Item updateItemEntity(String id, ItemBody itemBody) {
         Integer idInt = Integer.valueOf(id);
-        ItemEntity itemEntity = new ItemEntity(idInt,itemBody.getName(),itemBody.getType(),
-                itemBody.getPrice(),itemBody.getSpec().getCpu(),itemBody.getSpec().getCapacity());
-        ItemEntity itemEntityUpdated = electronicStoreItemRepository.updateItemEntity(idInt, itemEntity);
-        Item itemUpdated = new Item(itemEntityUpdated);
+        ItemEntity itemEntityUpdated = electronicStoreItemJpaRepository.findById(idInt).orElseThrow(()-> new NotFoundException("찾을 수 없습니다."));
+        itemEntityUpdated.setItemBody(itemBody);
+        Item itemUpdated = ItemMapper.INSTANCE.itemEntityToItem(itemEntityUpdated);
         return itemUpdated;
     }
 
-    @Transactional
+    @Transactional(transactionManager = "tmJpa1")
     public Integer buyItems(BuyOrder buyOrder) {
 
         // buyOrder에서 상품 ID와 수량 얻어내기
@@ -68,7 +80,9 @@ public class ElectronicStoreItemService {
         Integer itemNums = buyOrder.getItemNums();
 
         // 상품을 조회하여 수량이 얼마나 있는지 확인한다.
-        ItemEntity itemEntity = electronicStoreItemRepository.findById(String.valueOf(itemId));
+        ItemEntity itemEntity = electronicStoreItemJpaRepository.findById(itemId).orElseThrow(
+                ()-> new NotFoundException("해당 이름의 아이템이 없습니다")
+        );
 
         // 단 재고가 없거나 수량이 아예 없으면 살수 없다.
         if(itemEntity.getStoreId() == null) throw new RuntimeException("매장을 찾을 수 없습니다.");
@@ -85,11 +99,13 @@ public class ElectronicStoreItemService {
 
         // 상품의 재고에 기존 계산한 재고를 구매하는 수량을 뺀다.
         Integer minus = itemEntity.getStock() - successByItemNums;
-        electronicStoreItemRepository.updateItemStock(itemId, minus);
+        itemEntity.setStock(minus);
 
         // 매장의 매상에 추가
-        StoreSalesEntity storeSales = storeSalesRepository.findStoreSalesById(itemEntity.getStoreId());
-        storeSalesRepository.updateSalesAmount(itemEntity.getStoreId(), storeSales.getAmount() + totalPrice);
+        StoreSalesEntity storeSales = storeSalesJpaRepository.findById(itemEntity.getStoreId()).orElseThrow(
+                () -> new NotFoundException("요청하신 StoreID가 없습니다.")
+        );
+        storeSales.setAmount(storeSales.getAmount() + totalPrice);
 
         return successByItemNums;
     }

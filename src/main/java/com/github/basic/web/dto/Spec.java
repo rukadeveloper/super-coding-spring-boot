@@ -1,5 +1,8 @@
 package com.github.basic.web.dto;
 
+import lombok.Setter;
+
+@Setter
 public class Spec {
 
     private String cpu;

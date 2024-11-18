@@ -3,11 +3,13 @@ package com.github.basic.web.dto;
 import com.github.basic.repository.item.ItemEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Objects;
 
 @NoArgsConstructor
 @Getter
+@Setter
 public class Item {
 
     private String id;

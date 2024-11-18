@@ -27,7 +27,7 @@ public class JdbcConfig {
         return new JdbcTemplate(dataSource());
     }
 
-    @Bean
+    @Bean(name="tm1")
     public PlatformTransactionManager transactionManager() {
         return new DataSourceTransactionManager(dataSource());
     }
