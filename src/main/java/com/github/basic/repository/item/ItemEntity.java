@@ -1,8 +1,11 @@
 package com.github.basic.repository.item;
 
+import com.github.basic.repository.storeSales.StoreSalesEntity;
 import com.github.basic.web.dto.ItemBody;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -27,8 +30,9 @@ public class ItemEntity {
     @Column(name = "price")
     private Integer price;
 
-    @Column(name = "store_id")
-    private Integer storeId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "store_id", nullable = true)
+    private StoreSalesEntity storeSales;
 
     @Column(name = "stock")
     private Integer stock;
@@ -44,10 +48,14 @@ public class ItemEntity {
         this.name = name;
         this.type = type;
         this.price = price;
-        this.storeId = null;
+        this.storeSales = null;
         this.stock = 0;
         this.cpu = cpu;
         this.capacity = capacity;
+    }
+
+    public Optional<StoreSalesEntity> getStoreSales() {
+        return Optional.ofNullable(storeSales);
     }
 
     public void setItemBody(ItemBody itemBody) {

@@ -25,8 +25,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class ElectronicStoreItemService {
-    private final ElectronicStoreItemRepository electronicStoreItemRepository;
-    private final StoreSalesRepository storeSalesRepository;
     private final ElectronicStoreItemJpaRepository electronicStoreItemJpaRepository;
     private final StoreSalesJpaRepository storeSalesJpaRepository;
 
@@ -87,7 +85,7 @@ public class ElectronicStoreItemService {
         );
 
         // 단 재고가 없거나 수량이 아예 없으면 살수 없다.
-        if(itemEntity.getStoreId() == null) throw new RuntimeException("매장을 찾을 수 없습니다.");
+        if(itemEntity.getStoreSales().isEmpty()) throw new RuntimeException("매장을 찾을 수 없습니다.");
         if(itemEntity.getStock() <= 0) throw new RuntimeException("상품의 재고가 없습니다.");
 
         Integer successByItemNums;
@@ -104,8 +102,8 @@ public class ElectronicStoreItemService {
         itemEntity.setStock(minus);
 
         // 매장의 매상에 추가
-        StoreSalesEntity storeSales = storeSalesJpaRepository.findById(itemEntity.getStoreId()).orElseThrow(
-                () -> new NotFoundException("요청하신 StoreID가 없습니다.")
+        StoreSalesEntity storeSales = itemEntity.getStoreSales().orElseThrow(
+                () -> new NotFoundException("요청하신 Store에 해당하는 스토어 상품이 없습니다.")
         );
         storeSales.setAmount(storeSales.getAmount() + totalPrice);
 
@@ -115,8 +113,5 @@ public class ElectronicStoreItemService {
     public List<Item> findItemByTypes(List<String> types) {
         List<ItemEntity> entities = electronicStoreItemJpaRepository.findItemEntitiesByTypeIn(types);
         return entities.stream().map(ItemMapper.INSTANCE::itemEntityToItem).collect(Collectors.toList());
-    }
-
-    public Page findAllWithPageable(Pageable pageable) {
     }
 }
